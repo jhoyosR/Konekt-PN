@@ -26,7 +26,7 @@ export class Internship {
     @OneToOne(
         () => Application,
         (application) => application.internship,
-        { eager: true, cascade: ['remove', 'soft-remove'] }
+        { eager: true }
     )
     @JoinColumn({name: 'applicationId'})
     application!: Application;
