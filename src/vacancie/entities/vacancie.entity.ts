@@ -52,7 +52,7 @@ export class Vacancie {
     @ManyToMany(
         () => Skill, 
         skill => skill.vacancies,
-        { eager: true, cascade: ['remove', 'soft-remove'] }
+        { eager: true, cascade: ['remove'] }
     )
     @JoinTable({
         name: 'vacancie_skills',
