@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePartnershipDto } from './dto/create-partnership.dto';
 import { UpdatePartnershipDto } from './dto/update-partnership.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,9 +36,19 @@ export class PartnershipService {
 
     // Obtener la empresa y universidad relacionada; Lanzará NotFound si no existe
     const [ company, university ] = await Promise.all([
-      await this.companyService.findOne(companyId),
-      await this.universityService.findOne(universityId)
+      this.companyService.findOne(companyId),
+      this.universityService.findOne(universityId)
     ]);
+
+    // Validar que no exista ya un convenio entre las entidades
+    const partnershipAlreadyExists = await this.partnershipRepository.exists({
+      where: {
+        company: { id: companyId },
+        university: { id: universityId }
+      }
+    });
+
+    if (partnershipAlreadyExists) throw new ConflictException(MSG.alreadyExists('convenio'));
 
     // Crea la entidad convenio con las relaciones
     const partnership = this.partnershipRepository.create({
