@@ -41,6 +41,9 @@ import { NotificationModule } from './notification/notification.module';
         database: config.getOrThrow<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: config.get<string>('NODE_ENV') !== 'production',
+        ssl: {
+          rejectUnauthorized: false,
+        }
       }),
     }),
 
