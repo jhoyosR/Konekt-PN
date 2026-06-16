@@ -19,6 +19,7 @@ import { InternshipModule } from './internship/internship.module';
 import { InternshipUpdateModule } from './internship-update/internship-update.module';
 import { SkillModule } from './skill/skill.module';
 import { SeedModule } from './seed/seed.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -71,7 +72,9 @@ import { SeedModule } from './seed/seed.module';
 
     SkillModule,
 
-    SeedModule
+    SeedModule,
+
+    NotificationModule
 
   ],
   controllers: [],

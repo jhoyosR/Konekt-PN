@@ -17,14 +17,12 @@ export class Skill {
     @ManyToMany(
         () => Student, 
         student => student.skills,
-        { cascade: ['remove', 'soft-remove'] }
     )
     students?: Student[];
 
     @ManyToMany(
         () => Vacancie, 
         vacancie => vacancie.skills,
-        { cascade: ['remove', 'soft-remove'] }
     )
     vacancies?: Vacancie[];
 }
