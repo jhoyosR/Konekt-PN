@@ -62,7 +62,7 @@ export class Student {
     @OneToOne(
         () => User, 
         (user) => user.company, 
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinColumn({ name: 'userId' })
     user!: User;
@@ -77,14 +77,15 @@ export class Student {
 
     @OneToMany(
         () => Application,
-        (application) => application.student
+        (application) => application.student,
+        { cascade: ['remove', 'soft-remove'] }
     )
     applications?: Application[]
 
     @ManyToMany(
         () => Skill, 
         skill => skill.students,
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinTable({
         name: 'student_skills',

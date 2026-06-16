@@ -36,7 +36,8 @@ export class Application {
 
     @OneToOne(
         () => Internship,
-        (internship) => internship.application
+        (internship) => internship.application,
+        { cascade: ['remove', 'soft-remove'] }
     )
     internship!: Internship;
 

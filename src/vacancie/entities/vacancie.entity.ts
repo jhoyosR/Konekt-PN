@@ -44,14 +44,15 @@ export class Vacancie {
 
     @OneToMany(
         () => Application,
-        (application) => application.vacancie
+        (application) => application.vacancie,
+        { cascade: ['remove', 'soft-remove'] }
     )
     applications?: Application[]
 
     @ManyToMany(
         () => Skill, 
         skill => skill.vacancies,
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinTable({
         name: 'vacancie_skills',

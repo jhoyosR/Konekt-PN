@@ -26,14 +26,15 @@ export class Internship {
     @OneToOne(
         () => Application,
         (application) => application.internship,
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinColumn({name: 'applicationId'})
     application!: Application;
 
     @OneToMany(
         () => InternshipUpdate,
-        (internshipUpdate) => internshipUpdate.internship
+        (internshipUpdate) => internshipUpdate.internship,
+        { cascade: ['remove', 'soft-remove'] }
     )
     internshipUpdates?: InternshipUpdate[]
 

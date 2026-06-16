@@ -41,20 +41,22 @@ export class University {
     @OneToOne(
         () => User, 
         (user) => user.university, 
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinColumn({ name: 'userId' })
     user!: User;
 
     @OneToMany(
         () => Student,
-        (student) => student.university
+        (student) => student.university,
+        { cascade: ['remove', 'soft-remove'] }
     )
     students?: Student[]
 
     @OneToMany(
         () => Partnership,
-        (partnership) => partnership.university
+        (partnership) => partnership.university,
+        { cascade: ['remove', 'soft-remove'] }
     )
     partnerships?: Partnership[]
 

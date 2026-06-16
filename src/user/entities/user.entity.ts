@@ -54,21 +54,21 @@ export class User {
     @OneToOne(
         () => University, 
         (university) => university.user,
-        { nullable: true }
+        { nullable: true, cascade: ['remove', 'soft-remove'] }
     )
     university?: University;
 
     @OneToOne(
         () => Company, 
         (company) => company.user,
-        { nullable: true }
+        { nullable: true, cascade: ['remove', 'soft-remove'] }
     )
     company?: Company;
 
     @OneToOne(
         () => Student, 
         (student) => student.user,
-        { nullable: true }
+        { nullable: true, cascade: ['remove', 'soft-remove'] }
     )
     student?: Student;
 }

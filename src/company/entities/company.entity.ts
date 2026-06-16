@@ -51,20 +51,22 @@ export class Company {
     @OneToOne(
         () => User, 
         (user) => user.company, 
-        { eager: true }
+        { eager: true, cascade: ['remove', 'soft-remove'] }
     )
     @JoinColumn({ name: 'userId' })
     user!: User;
 
     @OneToMany(
         () => Vacancie,
-        (vacancie) => vacancie.company
+        (vacancie) => vacancie.company,
+        { cascade: ['remove', 'soft-remove'] }
     )
     vacancies?: Vacancie[]
 
     @OneToMany(
         () => Partnership,
-        (partnership) => partnership.company
+        (partnership) => partnership.company,
+        { cascade: ['remove', 'soft-remove'] }
     )
     partnerships?: Partnership[]
 
