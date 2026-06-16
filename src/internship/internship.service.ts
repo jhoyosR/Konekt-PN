@@ -11,6 +11,9 @@ import { InternshipFiltersDto } from './dto/internship-filters.dto';
 import { PaginatedResponse } from '../common/interfaces/paginated-response.interface';
 import { MSG } from '../common/helpers/validation-messages.helper';
 import { InternshipStatus } from './enum/internship-status.enum';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/enum/notification-type.enum';
+import { NotificationTemplates } from '../notification/templates/notification-templates';
 
 @Injectable()
 export class InternshipService {
@@ -21,6 +24,7 @@ export class InternshipService {
     private readonly applicationService: ApplicationService,
     private readonly commonService: CommonService,
     private readonly filterBuilder: InternshipFilterBuilder,
+    private readonly notificationService: NotificationService,
   ) {}
 
   /**
@@ -45,7 +49,22 @@ export class InternshipService {
       application
     });
 
-    return this.internshipRepository.save(internship);
+    const createdInternship = await this.internshipRepository.save(internship);
+
+    await Promise.all([
+      this.notificationService.create({
+        userId: application.student.userId,
+        resourceId: createdInternship.id,
+        ...NotificationTemplates.internshipCreatedStudent(application.vacancie.company.name)
+      }),
+      this.notificationService.create({
+        userId: application.student.university!.userId,
+        resourceId: createdInternship.id,
+        ...NotificationTemplates.internshipCreatedUniversity(application.vacancie.company.name, application.student.fullName)
+      }),
+    ])
+
+    return createdInternship;
   }
 
   /**

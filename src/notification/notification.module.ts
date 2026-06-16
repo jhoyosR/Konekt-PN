@@ -10,6 +10,6 @@ import { Notification } from './entities/notification.entity';
   ],
   controllers: [NotificationController],
   providers: [NotificationService],
-  exports: [ NotificationService ]
+  exports: [ TypeOrmModule, NotificationService ]
 })
 export class NotificationModule {}
