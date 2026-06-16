@@ -11,6 +11,9 @@ import { VacancieService } from '../vacancie/vacancie.service';
 import { CommonService } from '../common/common.service';
 import { ApplicationFiltersDto } from './dto/application-filters.dto';
 import { ApplicationFilterBuilder } from './filters/application-filter.builder';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/enum/notification-type.enum';
+import { NotificationTemplates } from '../notification/templates/notification-templates';
 
 @Injectable()
 export class ApplicationService {
@@ -22,6 +25,7 @@ export class ApplicationService {
     private readonly vacancieService: VacancieService,
     private readonly commonService: CommonService,
     private readonly filterBuilder: ApplicationFilterBuilder,
+    private readonly notificationService: NotificationService,
   ) {}
 
   /**
@@ -45,7 +49,22 @@ export class ApplicationService {
       vacancie
     });
 
-    return this.applicationRepository.save(application);
+    const newApplication = await this.applicationRepository.save(application);
+
+    await Promise.all([
+      this.notificationService.create({
+        userId: vacancie.company.userId,
+        resourceId: newApplication.id,
+        ...NotificationTemplates.newApplication(vacancie.title)
+      }),
+      this.notificationService.create({
+        userId: student.userId,
+        resourceId: newApplication.id,
+        ...NotificationTemplates.applicationSuccessfullyRegistered(vacancie.title)
+      })
+    ]);
+
+    return newApplication;
   }
 
   /**

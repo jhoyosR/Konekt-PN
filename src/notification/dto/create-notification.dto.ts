@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { MSG } from "../../common/helpers/validation-messages.helper";
+import { NotificationType } from '../enum/notification-type.enum';
 
 export class CreateNotificationDto {
 
@@ -17,4 +18,14 @@ export class CreateNotificationDto {
     @IsString({ message: MSG.string('El mensaje') })
     @IsNotEmpty({ message: MSG.isNotEmpty('El mensaje') })
     message!: string;
+
+    @ApiProperty({ example: NotificationType.APPLICATION_SUCCESSFULLY_REGISTERED })
+    @IsOptional()
+    @IsEnum(NotificationType, { message: MSG.notValidValue('tipo') })
+    type?: NotificationType
+
+    @ApiProperty({ example: 1 })
+    @IsOptional()
+    @IsNumber()
+    resourceId?: number;
 }

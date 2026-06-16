@@ -12,6 +12,10 @@ import { VacancieFilterBuilder } from './filters/vacancie-filter.builder';
 import { CommonService } from '../common/common.service';
 import { AssignSkillDto } from '../skill/dto/assign-skill.dto';
 import { Skill } from '../skill/entities/skill.entity';
+import { Student } from '../student/entities/student.entity';
+import { Notification } from '../notification/entities/notification.entity';
+import { NotificationType } from '../notification/enum/notification-type.enum';
+import { NotificationTemplates } from '../notification/templates/notification-templates';
 
 @Injectable()
 export class VacancieService {
@@ -24,7 +28,12 @@ export class VacancieService {
     private readonly filterBuilder: VacancieFilterBuilder,
     private readonly dataSource: DataSource,
     @InjectRepository(Skill)
-    private readonly skillRepository: Repository<Skill>
+    private readonly skillRepository: Repository<Skill>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
+    @InjectRepository(Notification)
+    private readonly notificationRepository: Repository<Notification>,
+
   ) {}
 
   /**
@@ -135,7 +144,11 @@ export class VacancieService {
   
       vacancie.skills?.push(skill);
   
-      return this.vacancieRepository.save(vacancie);
+      const vacancieAssigned = await this.vacancieRepository.save(vacancie);
+
+      await this.notifyStudentsWithSameSkill(vacancieAssigned, assignSkillDto.skillId);
+
+      return vacancieAssigned;
     }
   
     /**
@@ -149,5 +162,54 @@ export class VacancieService {
         .relation(Vacancie, 'skills')
         .of(id)
         .remove(skillId);
+    }
+
+    /**
+     * Notifica a los estudiantes que tengan la misma habilidad asociada a la vacante
+     * 
+     * @param {Vacancie} vacancie 
+     * @param {number} skillId 
+     */
+    private async notifyStudentsWithSameSkill(vacancie: Vacancie, skillId: number) {
+
+      const students = await this.studentRepository.createQueryBuilder('student')
+        .innerJoin(
+          'student.skills',
+          'skill',
+          'skill.id = :skillId',
+          {
+            skillId
+          },
+        )
+        .distinct(true)
+        .getMany();
+
+      const notifiedUsers = await this.notificationRepository.find({
+        select: {
+          userId: true,
+        },
+        where: {
+          type: NotificationType.NEW_COMPATIBLE_VACANCY,
+          resourceId: vacancie.id,
+        },
+      });
+
+      const notifiedIds = new Set(
+        notifiedUsers.map(notifiedUser => notifiedUser.userId),
+      );
+
+      const notifications = students
+        .filter(student => !notifiedIds.has(student.userId))
+        .map(student =>
+          this.notificationRepository.create({
+            userId: student.userId,
+            resourceId: vacancie.id,
+            ...NotificationTemplates.newCompatibleVacancy(vacancie.title)
+          }),
+        );
+
+      if (notifications.length > 0) {
+        await this.notificationRepository.save(notifications);
+      }
     }
 }

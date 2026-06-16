@@ -7,13 +7,15 @@ import { StudentModule } from '../student/student.module';
 import { VacancieModule } from '../vacancie/vacancie.module';
 import { CommonModule } from '../common/common.module';
 import { ApplicationFilterBuilder } from './filters/application-filter.builder';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ Application ]),
     StudentModule,
     VacancieModule,
-    CommonModule
+    CommonModule,
+    NotificationModule
   ],
   controllers: [ApplicationController],
   providers: [ApplicationService, ApplicationFilterBuilder],
