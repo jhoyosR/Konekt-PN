@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { STORAGE_STRATEGY } from './constants/storage.constants';
 import { LocalStorageStrategy } from './strategies/local-storage.strategy';
-// import { S3StorageStrategy } from './strategies/s3-storage.strategy';
+import { S3StorageStrategy } from './strategies/s3-storage.strategy';
 
 @Module({
   imports: [ConfigModule],
@@ -14,7 +14,7 @@ import { LocalStorageStrategy } from './strategies/local-storage.strategy';
 
         switch (driver) {
           case 's3':
-            // return new S3StorageStrategy(configService);
+            return new S3StorageStrategy(configService);
           case 'local':
           default:
             return new LocalStorageStrategy(configService);
