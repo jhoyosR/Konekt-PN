@@ -1,0 +1,27 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "testEnvironment": "node",
+  "testRegex": ".*\\.integration\\.spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "../src/**/*.(t|j)s",
+    "!../src/main.ts",
+    "!../src/**/*.module.ts",
+    "!../src/**/*.entity.ts",
+    "!../src/**/dto/**",
+    "!../src/**/enum/**",
+    "!../src/**/interface/**"
+  ],
+  "coverageDirectory": "../coverage/integration",
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"],
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(uuid)/)"
+  ],
+  "testTimeout": 30000
+}
